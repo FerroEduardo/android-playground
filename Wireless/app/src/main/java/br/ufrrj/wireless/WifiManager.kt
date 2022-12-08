@@ -6,10 +6,12 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
+import android.os.Build
+import android.provider.Settings
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.snapshots.SnapshotStateList
 
-class WifiScanReceiver(
+class WifiManager(
     private val context: Context,
     private var list: SnapshotStateList<ScanResult>,
     private var isScanning: MutableState<Boolean>
@@ -21,8 +23,21 @@ class WifiScanReceiver(
         intentFilter.addAction(WifiManager.SCAN_RESULTS_AVAILABLE_ACTION)
         context.registerReceiver(this, intentFilter)
 
-        isScanning.value = true
-        wifiManager.startScan()
+        if (wifiManager.isWifiEnabled) {
+            isScanning.value = true
+            wifiManager.startScan()
+        } else {
+            turnWifiOn()
+        }
+    }
+
+    private fun turnWifiOn() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            val panelIntent = Intent(Settings.Panel.ACTION_WIFI)
+            context.startActivity(panelIntent)
+        } else {
+            wifiManager.setWifiEnabled(true);
+        }
     }
 
     override fun onReceive(context: Context, intent: Intent) {

@@ -61,7 +61,7 @@ fun Container() {
     val mutableStateScanResultList = mutableStateListOf<ScanResult>()
     val list = remember { mutableStateScanResultList }
 
-    val scanner = WifiScanReceiver(LocalContext.current, mutableStateScanResultList, mutableIsScanning)
+    val scanner = WifiManager(LocalContext.current, mutableStateScanResultList, mutableIsScanning)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -84,7 +84,7 @@ fun Container() {
 fun ScanButton(
     activity: Activity,
     perms: Array<String>,
-    scanner: WifiScanReceiver,
+    scanner: WifiManager,
     isScanning: Boolean
 ) {
     Button(
