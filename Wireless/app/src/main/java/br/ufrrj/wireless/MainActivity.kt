@@ -3,8 +3,11 @@ package br.ufrrj.wireless
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Bundle
+import android.os.Environment
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -13,6 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -22,6 +26,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import br.ufrrj.wireless.ui.theme.MainTheme
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.StandardOpenOption
+import java.time.LocalDateTime
+import java.util.*
+
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,10 +64,8 @@ fun Container() {
         Manifest.permission.CHANGE_WIFI_STATE,
         Manifest.permission.ACCESS_WIFI_STATE
     )
-    val activity = LocalContext.current as Activity
 
     val mutableIsScanning = mutableStateOf(false)
-    val isScanning by remember { mutableIsScanning }
 
     val mutableStateScanResultList = mutableStateListOf<ScanResult>()
     val list = remember { mutableStateScanResultList }
@@ -74,9 +83,18 @@ fun Container() {
                 .fillMaxSize()
         ) {
             WifiList(list)
-            ScanButton(activity, perms, scanner, isScanning)
+            Buttons(perms, scanner)
         }
     }
+}
+
+@Composable
+fun Buttons(
+    perms: Array<String>,
+    scanner: WifiManager,
+) {
+    val activity = LocalContext.current as Activity
+    ScanButton(activity, perms, scanner)
 }
 
 @SuppressLint("UnrememberedMutableState")
@@ -84,20 +102,70 @@ fun Container() {
 fun ScanButton(
     activity: Activity,
     perms: Array<String>,
-    scanner: WifiManager,
-    isScanning: Boolean
+    scanner: WifiManager
 ) {
-    Button(
-        onClick = {
-            ActivityCompat.requestPermissions(activity, perms, 42)
-            if (!isScanning) scanner.startScan()
-        },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp, 0.dp)
-            .alpha(if (isScanning) 0.5f else 1f)
-    ) {
-        Text(text = "Scan")
+    val isScanning by scanner.isScanning
+    val wifiList = scanner.list
+    val context = LocalContext.current
+    Row(modifier = Modifier.padding(10.dp, 0.dp)) {
+        Button(
+            onClick = {
+                ActivityCompat.requestPermissions(activity, perms, 42)
+                if (!isScanning) scanner.startScan()
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .padding(2.dp, 0.dp)
+                .alpha(if (isScanning) 0.5f else 1f)
+        ) {
+            Text(text = "Scan")
+        }
+        Button(
+            onClick = {
+                if (!isScanning) saveList(context, wifiList)
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.3f)
+                .padding(2.dp, 0.dp)
+                .alpha(if (isScanning) 0.5f else 1f),
+            colors = ButtonDefaults.buttonColors(MaterialTheme.colors.secondary)
+        ) {
+            Text(text = "Save")
+        }
+    }
+}
+
+fun saveList(context: Context, wifiList: SnapshotStateList<ScanResult>) {
+    val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+    val fileName = "networks.txt"
+    val dir = "wireless"
+    val newDir = File("$path${File.pathSeparator}$dir")
+    try {
+        if (!newDir.exists()) {
+            newDir.mkdir()
+        }
+        val file = File(path, fileName)
+        val writer = Files.newBufferedWriter(
+            file.toPath(),
+            StandardOpenOption.CREATE,
+            StandardOpenOption.APPEND
+        )
+        writer.write("${LocalDateTime.now()}\n")
+        if (wifiList.size > 0) {
+            wifiList.forEach {
+                writer.write("${it.SSID}\n")
+            }
+        } else {
+            writer.write("Lista vazia\n")
+        }
+        writer.write("--------------------------------\n")
+        writer.close()
+
+        Toast.makeText(context, "Salvo em: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
+    } catch (e: IOException) {
+        e.printStackTrace()
     }
 }
 

@@ -13,8 +13,8 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 
 class WifiManager(
     private val context: Context,
-    private var list: SnapshotStateList<ScanResult>,
-    private var isScanning: MutableState<Boolean>
+    var list: SnapshotStateList<ScanResult>,
+    var isScanning: MutableState<Boolean>
 ): BroadcastReceiver() {
     private val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
 
@@ -25,6 +25,7 @@ class WifiManager(
 
         if (wifiManager.isWifiEnabled) {
             isScanning.value = true
+            list.clear()
             wifiManager.startScan()
         } else {
             turnWifiOn()
@@ -52,7 +53,6 @@ class WifiManager(
 
     private fun scanSuccess(wifiManager: WifiManager) {
         val results = wifiManager.scanResults
-        list.clear()
         list.addAll(results.sortedByDescending { it.level })
     }
 
