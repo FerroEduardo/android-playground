@@ -15,6 +15,7 @@ import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,11 +55,13 @@ fun Container() {
     )
     val activity = LocalContext.current as Activity
 
+    val mutableIsScanning = mutableStateOf(false)
+    val isScanning by remember { mutableIsScanning }
+
     val mutableStateScanResultList = mutableStateListOf<ScanResult>()
     val list = remember { mutableStateScanResultList }
 
-    val scanner = WifiScanReceiver(LocalContext.current, mutableStateScanResultList)
-
+    val scanner = WifiScanReceiver(LocalContext.current, mutableStateScanResultList, mutableIsScanning)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -71,18 +74,30 @@ fun Container() {
                 .fillMaxSize()
         ) {
             WifiList(list)
-            Button(
-                onClick = {
-                    ActivityCompat.requestPermissions(activity, perms, 42)
-                    scanner.startScan()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(10.dp, 0.dp)
-            ) {
-                Text(text = "Scan")
-            }
+            ScanButton(activity, perms, scanner, isScanning)
         }
+    }
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Composable
+fun ScanButton(
+    activity: Activity,
+    perms: Array<String>,
+    scanner: WifiScanReceiver,
+    isScanning: Boolean
+) {
+    Button(
+        onClick = {
+            ActivityCompat.requestPermissions(activity, perms, 42)
+            if (!isScanning) scanner.startScan()
+        },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(10.dp, 0.dp)
+            .alpha(if (isScanning) 0.5f else 1f)
+    ) {
+        Text(text = "Scan")
     }
 }
 
@@ -102,7 +117,7 @@ fun ColumnScope.WifiList(list: List<ScanResult>) {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = String.format("Frequência: %s", item.frequency.toString()))
+                    Text(text = String.format("Frequência: %s Mhz", item.frequency.toString()))
                     Text(text = String.format("Força: %s", getWifiStrength(item.level)))
                 }
                 Divider()
