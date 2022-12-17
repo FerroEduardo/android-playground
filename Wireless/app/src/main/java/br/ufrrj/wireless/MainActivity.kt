@@ -3,34 +3,32 @@ package br.ufrrj.wireless
 import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Context
 import android.net.wifi.ScanResult
+import android.os.Build
 import android.os.Bundle
-import android.os.Environment
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.RequiresApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import br.ufrrj.wireless.ui.theme.MainTheme
-import java.io.File
-import java.io.IOException
-import java.nio.file.Files
-import java.nio.file.StandardOpenOption
-import java.time.LocalDateTime
 import java.util.*
 
 
@@ -45,12 +43,27 @@ class MainActivity : ComponentActivity() {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
+    val result = ScanResult()
+    result.SSID = "salve"
+    result.frequency = 2400
+    val list = listOf(result, result, result, result, result, result, result, result)
     MainTheme {
-        MainTheme {
-            Container()
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colors.background,
+        ) {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                WifiList(list)
+            }
         }
     }
 }
@@ -137,61 +150,75 @@ fun ScanButton(
     }
 }
 
-fun saveList(context: Context, wifiList: SnapshotStateList<ScanResult>) {
-    val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
-    val fileName = "networks.txt"
-    val dir = "wireless"
-    val newDir = File("$path${File.pathSeparator}$dir")
-    try {
-        if (!newDir.exists()) {
-            newDir.mkdir()
-        }
-        val file = File(path, fileName)
-        val writer = Files.newBufferedWriter(
-            file.toPath(),
-            StandardOpenOption.CREATE,
-            StandardOpenOption.APPEND
-        )
-        writer.write("${LocalDateTime.now()}\n")
-        if (wifiList.size > 0) {
-            wifiList.forEach {
-                writer.write("${it.SSID}\n")
+@Composable
+fun ColumnScope.WifiList(list: List<ScanResult>) {
+    val padding = PaddingValues(10.dp, 0.dp)
+    Text(
+        text = "Redes disponíveis",
+        modifier = Modifier
+            .align(Alignment.Start)
+            .padding(padding)
+    )
+    LazyColumn(Modifier.weight(1f)) {
+        itemsIndexed(list) { index, item ->
+            Column(
+                modifier = Modifier
+                    .padding(padding)
+            ) {
+                WifiCard(index, list.size, item.level, item.SSID)
             }
-        } else {
-            writer.write("Lista vazia\n")
         }
-        writer.write("--------------------------------\n")
-        writer.close()
-
-        Toast.makeText(context, "Salvo em: ${file.absolutePath}", Toast.LENGTH_SHORT).show()
-    } catch (e: IOException) {
-        e.printStackTrace()
     }
 }
 
 @Composable
-fun ColumnScope.WifiList(list: List<ScanResult>) {
-    LazyColumn(Modifier.weight(1f)) {
-        items(list) { item ->
-            Column(
-                modifier = Modifier
-                    .clip(
-                        RoundedCornerShape(10.dp)
-                    )
-                    .padding(10.dp, 5.dp)
-            ) {
-                Text(text = String.format("Nome: %s", item.SSID))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(text = String.format("Frequência: %s Mhz", item.frequency.toString()))
-                    Text(text = String.format("Força: %s", getWifiStrength(item.level)))
-                }
-                Divider()
-            }
-        }
+fun WifiCard(index: Int, count: Int, level: Int, SSID: String) {
+    val isFirst = index == 0
+    val isLast = (count - 1) == index
+    val round = 10.dp
+    val shape: RoundedCornerShape
+    if (count == 1) {
+        shape = RoundedCornerShape(round)
+    } else if (isFirst) {
+        shape = RoundedCornerShape(round, round)
+    } else if (isLast) {
+        shape = RoundedCornerShape(0.dp, 0.dp, round, round)
+    } else {
+        shape = RoundedCornerShape(0.dp)
     }
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(shape)
+            .background(Color.LightGray)
+            .padding(5.dp, 5.dp)
+    ) {
+        GetWifiIcon(level)
+//        Text(text = String.format("Força: %s", getWifiStrength(level)), modifier = Modifier.padding(10.dp, 0.dp))
+        Text(text = String.format("Nome: %s", SSID), modifier = Modifier.padding(10.dp, 0.dp))
+    }
+}
+
+@Composable
+fun GetWifiIcon(level: Int) {
+    val icon: ImageVector
+    if (level >= -30) {
+        icon = Icons.Rounded.SignalWifi4Bar // 5
+    } else if (level >= -67) {
+        icon = Icons.Rounded.NetworkWifi // 4
+    } else if (level >= -70) {
+        icon = Icons.Rounded.NetworkWifi // 3
+    } else if (level >= -80) {
+        icon = Icons.Rounded.NetworkWifi // 2
+    } else if (level >= -90) {
+        icon = Icons.Rounded.NetworkWifi // 1
+    } else {
+        icon = Icons.Rounded.SignalWifi0Bar // 0
+    }
+    Icon(
+        icon,
+        contentDescription = icon.name
+    )
 }
 
 fun getWifiStrength(level: Int): String {
