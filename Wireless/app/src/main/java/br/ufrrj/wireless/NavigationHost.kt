@@ -5,7 +5,6 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import br.ufrrj.wireless.views.WifiDetailsScreen
 import br.ufrrj.wireless.views.WifiListScreen
 
 @Composable
@@ -20,9 +19,6 @@ fun NavigationHost(
     ) {
         composable(route = WifiListDestination.route) {
             WifiListScreen(navController)
-        }
-        composable(route = WifiDetailsDestination.route) {
-            WifiDetailsScreen(navController)
         }
     }
 }

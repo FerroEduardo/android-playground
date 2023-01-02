@@ -8,8 +8,4 @@ object WifiListDestination : Destination {
     override val route = "wifi-list"
 }
 
-object WifiDetailsDestination : Destination {
-    override val route = "wifi-details"
-}
-
-val screens = listOf(WifiListDestination, WifiDetailsDestination)
+val screens = listOf(WifiListDestination)

@@ -9,14 +9,18 @@ import android.net.wifi.WifiManager
 import android.os.Build
 import android.provider.Settings
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.snapshots.SnapshotStateList
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
 
 class WifiManager(
     private val context: Context,
-    var list: SnapshotStateList<ScanResult>,
-    var isScanning: MutableState<Boolean>
 ): BroadcastReceiver() {
     private val wifiManager = context.getSystemService(Context.WIFI_SERVICE) as WifiManager
+
+    companion object {
+        var scanResultList: MutableList<ScanResult> = mutableStateListOf()
+        val isScanning: MutableState<Boolean> = mutableStateOf(false)
+    }
 
     fun startScan() {
         val intentFilter = IntentFilter()
@@ -25,7 +29,7 @@ class WifiManager(
 
         if (wifiManager.isWifiEnabled) {
             isScanning.value = true
-            list.clear()
+            scanResultList.clear()
             wifiManager.startScan()
         } else {
             turnWifiOn()
@@ -53,7 +57,7 @@ class WifiManager(
 
     private fun scanSuccess(wifiManager: WifiManager) {
         val results = wifiManager.scanResults
-        list.addAll(results.sortedByDescending { it.level })
+        scanResultList.addAll(results.sortedByDescending { it.level })
     }
 
     private fun scanFailure(wifiManager: WifiManager) {

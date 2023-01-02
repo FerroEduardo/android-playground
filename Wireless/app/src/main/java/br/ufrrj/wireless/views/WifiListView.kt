@@ -28,7 +28,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
-import br.ufrrj.wireless.WifiDetailsDestination
 import br.ufrrj.wireless.WifiManager
 import br.ufrrj.wireless.saveList
 import br.ufrrj.wireless.ui.theme.MainTheme
@@ -68,12 +67,7 @@ fun WifiListScreen(navController: NavHostController) {
         Manifest.permission.ACCESS_WIFI_STATE
     )
 
-    val mutableIsScanning = mutableStateOf(false)
-
-    val mutableStateScanResultList = mutableStateListOf<ScanResult>()
-    val list = remember { mutableStateScanResultList }
-
-    val scanner = WifiManager(LocalContext.current, mutableStateScanResultList, mutableIsScanning)
+    val wifiManager = WifiManager(LocalContext.current)
 
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -85,13 +79,8 @@ fun WifiListScreen(navController: NavHostController) {
             modifier = Modifier
                 .fillMaxSize()
         ) {
-            WifiList(list)
-            Buttons(perms, scanner)
-            Button(onClick = {
-                navController.navigate(WifiDetailsDestination.route)
-            }) {
-                Text(text = "Detalhes")
-            }
+            WifiList(WifiManager.scanResultList)
+            Buttons(perms, wifiManager)
         }
     }
 }
@@ -99,10 +88,10 @@ fun WifiListScreen(navController: NavHostController) {
 @Composable
 fun Buttons(
     perms: Array<String>,
-    scanner: WifiManager,
+    wifiManager: WifiManager,
 ) {
     val activity = LocalContext.current as Activity
-    ScanButton(activity, perms, scanner)
+    ScanButton(activity, perms, wifiManager)
 }
 
 @SuppressLint("UnrememberedMutableState")
@@ -110,16 +99,16 @@ fun Buttons(
 fun ScanButton(
     activity: Activity,
     perms: Array<String>,
-    scanner: WifiManager
+    wifiManager: WifiManager
 ) {
-    val isScanning by scanner.isScanning
-    val wifiList = scanner.list
+    val isScanning by WifiManager.isScanning
+    val wifiList = WifiManager.scanResultList
     val context = LocalContext.current
     Row(modifier = Modifier.padding(10.dp, 0.dp)) {
         Button(
             onClick = {
                 ActivityCompat.requestPermissions(activity, perms, 42)
-                if (!isScanning) scanner.startScan()
+                if (!isScanning) wifiManager.startScan()
             },
             modifier = Modifier
                 .fillMaxWidth()

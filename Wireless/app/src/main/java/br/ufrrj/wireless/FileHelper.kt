@@ -4,14 +4,13 @@ import android.content.Context
 import android.net.wifi.ScanResult
 import android.os.Environment
 import android.widget.Toast
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import java.io.File
 import java.io.IOException
 import java.nio.file.Files
 import java.nio.file.StandardOpenOption
 import java.time.LocalDateTime
 
-fun saveList(context: Context, wifiList: SnapshotStateList<ScanResult>) {
+fun saveList(context: Context, wifiList: List<ScanResult>) {
     val path = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
     val fileName = "networks.txt"
     val dir = "wireless"
