@@ -7,6 +7,7 @@ import android.net.wifi.ScanResult
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -21,11 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import br.ufrrj.wireless.WifiManager
@@ -90,15 +91,6 @@ fun Buttons(
     wifiManager: WifiManager
 ) {
     val activity = LocalContext.current as Activity
-    ScanButton(activity, wifiManager)
-}
-
-@SuppressLint("UnrememberedMutableState")
-@Composable
-fun ScanButton(
-    activity: Activity,
-    wifiManager: WifiManager
-) {
     val isScanning by WifiManager.isScanning
     val wifiList = WifiManager.scanResultList
     val context = LocalContext.current
@@ -141,14 +133,13 @@ fun ColumnScope.WifiList(list: List<ScanResult>) {
             .align(Alignment.Start)
             .padding(padding)
     )
-    LazyColumn(Modifier.weight(1f)) {
+    LazyColumn(
+        modifier = Modifier
+            .weight(1f)
+            .padding(padding)
+    ) {
         itemsIndexed(list) { index, item ->
-            Column(
-                modifier = Modifier
-                    .padding(padding)
-            ) {
-                WifiCard(index, list.size, item.level, item.SSID)
-            }
+            WifiCard(index, list.size, item.level, item.SSID)
         }
     }
 }
@@ -172,12 +163,17 @@ fun WifiCard(index: Int, count: Int, level: Int, SSID: String) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape)
-            .background(Color.LightGray)
-            .padding(5.dp, 5.dp)
+            .background(MaterialTheme.colors.onBackground.copy(if (isSystemInDarkTheme()) 0.8f else 0.5f))
+            .padding(5.dp)
     ) {
         GetWifiIcon(level)
 //        Text(text = String.format("Força: %s", getWifiStrength(level)), modifier = Modifier.padding(10.dp, 0.dp))
-        Text(text = String.format("Nome: %s", SSID), modifier = Modifier.padding(10.dp, 0.dp))
+        Text(
+            text = String.format("%s", SSID),
+            modifier = Modifier.padding(10.dp, 0.dp),
+            color = MaterialTheme.colors.background,
+            fontSize = 18.sp
+        )
     }
 }
 
@@ -199,7 +195,8 @@ fun GetWifiIcon(level: Int) {
     }
     Icon(
         icon,
-        contentDescription = icon.name
+        contentDescription = icon.name,
+        tint = MaterialTheme.colors.background
     )
 }
 
