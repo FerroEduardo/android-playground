@@ -57,16 +57,16 @@ fun DefaultPreview() {
     }
 }
 
+val requiredPerms = arrayOf(
+    Manifest.permission.ACCESS_FINE_LOCATION,
+    Manifest.permission.ACCESS_COARSE_LOCATION,
+    Manifest.permission.CHANGE_WIFI_STATE,
+    Manifest.permission.ACCESS_WIFI_STATE
+)
+
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun WifiListScreen(navController: NavHostController) {
-    val perms = arrayOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.CHANGE_WIFI_STATE,
-        Manifest.permission.ACCESS_WIFI_STATE
-    )
-
     val wifiManager = WifiManager(LocalContext.current)
 
     Surface(
@@ -80,25 +80,23 @@ fun WifiListScreen(navController: NavHostController) {
                 .fillMaxSize()
         ) {
             WifiList(WifiManager.scanResultList)
-            Buttons(perms, wifiManager)
+            Buttons(wifiManager)
         }
     }
 }
 
 @Composable
 fun Buttons(
-    perms: Array<String>,
-    wifiManager: WifiManager,
+    wifiManager: WifiManager
 ) {
     val activity = LocalContext.current as Activity
-    ScanButton(activity, perms, wifiManager)
+    ScanButton(activity, wifiManager)
 }
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun ScanButton(
     activity: Activity,
-    perms: Array<String>,
     wifiManager: WifiManager
 ) {
     val isScanning by WifiManager.isScanning
@@ -107,7 +105,7 @@ fun ScanButton(
     Row(modifier = Modifier.padding(10.dp, 0.dp)) {
         Button(
             onClick = {
-                ActivityCompat.requestPermissions(activity, perms, 42)
+                ActivityCompat.requestPermissions(activity, requiredPerms, 42)
                 if (!isScanning) wifiManager.startScan()
             },
             modifier = Modifier
