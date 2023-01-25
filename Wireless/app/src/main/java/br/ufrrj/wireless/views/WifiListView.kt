@@ -4,8 +4,6 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.wifi.ScanResult
-import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -13,27 +11,24 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.NetworkWifi
-import androidx.compose.material.icons.rounded.SignalWifi0Bar
-import androidx.compose.material.icons.rounded.SignalWifi4Bar
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import br.ufrrj.wireless.R
 import br.ufrrj.wireless.WifiManager
 import br.ufrrj.wireless.saveList
 import br.ufrrj.wireless.ui.theme.MainTheme
 
-@RequiresApi(Build.VERSION_CODES.R)
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
@@ -164,13 +159,14 @@ fun WifiCard(index: Int, count: Int, level: Int, SSID: String) {
             .fillMaxWidth()
             .clip(shape)
             .background(MaterialTheme.colors.onBackground.copy(if (isSystemInDarkTheme()) 0.8f else 0.5f))
-            .padding(5.dp)
+            .padding(5.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         GetWifiIcon(level)
-//        Text(text = String.format("Força: %s", getWifiStrength(level)), modifier = Modifier.padding(10.dp, 0.dp))
         Text(
             text = String.format("%s", SSID),
             modifier = Modifier.padding(10.dp, 0.dp),
+            textAlign = TextAlign.Center,
             color = MaterialTheme.colors.background,
             fontSize = 18.sp
         )
@@ -179,46 +175,24 @@ fun WifiCard(index: Int, count: Int, level: Int, SSID: String) {
 
 @Composable
 fun GetWifiIcon(level: Int) {
-    val icon: ImageVector
-    if (level >= -30) {
-        icon = Icons.Rounded.SignalWifi4Bar // 5
+    val modifier = Modifier.size(36.dp)
+    val id: Int = if (level >= -30) {
+        R.drawable.signal_wifi_5_bar
     } else if (level >= -67) {
-        icon = Icons.Rounded.NetworkWifi // 4
+        R.drawable.signal_wifi_4_bar
     } else if (level >= -70) {
-        icon = Icons.Rounded.NetworkWifi // 3
+        R.drawable.signal_wifi_3_bar
     } else if (level >= -80) {
-        icon = Icons.Rounded.NetworkWifi // 2
+        R.drawable.signal_wifi_2_bar
     } else if (level >= -90) {
-        icon = Icons.Rounded.NetworkWifi // 1
+        R.drawable.signal_wifi_1_bar
     } else {
-        icon = Icons.Rounded.SignalWifi0Bar // 0
+        R.drawable.signal_wifi_0_bar
     }
     Icon(
-        icon,
-        contentDescription = icon.name,
+        painter = painterResource(id = id),
+        contentDescription = null,
+        modifier = modifier,
         tint = MaterialTheme.colors.background
     )
-}
-
-fun getWifiStrength(level: Int): String {
-    when {
-        level >= -30 -> {
-            return "5"
-        }
-        level >= -67 -> {
-            return "4"
-        }
-        level >= -70 -> {
-            return "3"
-        }
-        level >= -80 -> {
-            return "2"
-        }
-        level >= -90 -> {
-            return "1"
-        }
-        else -> {
-            return "0";
-        }
-    }
 }

@@ -6,8 +6,8 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.net.wifi.ScanResult
 import android.net.wifi.WifiManager
-import android.os.Build
 import android.provider.Settings
+import android.widget.Toast
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,12 +37,8 @@ class WifiManager(
     }
 
     private fun turnWifiOn() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val panelIntent = Intent(Settings.Panel.ACTION_WIFI)
-            context.startActivity(panelIntent)
-        } else {
-            wifiManager.setWifiEnabled(true);
-        }
+        val panelIntent = Intent(Settings.Panel.ACTION_WIFI)
+        context.startActivity(panelIntent)
     }
 
     override fun onReceive(context: Context, intent: Intent) {
@@ -57,10 +53,12 @@ class WifiManager(
 
     private fun scanSuccess(wifiManager: WifiManager) {
         val results = wifiManager.scanResults
-        scanResultList.addAll(results.sortedByDescending { it.level })
+        scanResultList.addAll(results.filter { it.BSSID.isNotBlank() }
+            .sortedByDescending { it.level })
     }
 
     private fun scanFailure(wifiManager: WifiManager) {
+        Toast.makeText(context, "Failed to scan", Toast.LENGTH_SHORT).show()
         val results = wifiManager.scanResults
 //        results.forEach {
 //            println(it.SSID)
