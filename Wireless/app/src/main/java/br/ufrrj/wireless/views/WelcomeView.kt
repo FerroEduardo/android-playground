@@ -3,19 +3,20 @@ package br.ufrrj.wireless.views
 import android.Manifest
 import android.app.Activity
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Surface
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
+import br.ufrrj.wireless.R
 import br.ufrrj.wireless.WifiListDestination
+import br.ufrrj.wireless.ui.theme.Green600
+import br.ufrrj.wireless.ui.theme.Red600
 import com.google.accompanist.permissions.*
 
 @OptIn(ExperimentalPermissionsApi::class)
@@ -41,6 +42,7 @@ fun WelcomeScreen(navController: NavHostController) {
 @Composable
 @OptIn(ExperimentalPermissionsApi::class)
 fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState) {
+    val iconModifier = Modifier.size(36.dp)
     Column(
         modifier = Modifier.weight(15f),
         verticalArrangement = Arrangement.Center
@@ -50,52 +52,148 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                 Manifest.permission.ACCESS_FINE_LOCATION -> {
                     when {
                         perm.status.isGranted -> {
-                            Text(text = "Permissão de localicação precisa aceita")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.check_circle_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Green600
+                                )
+                                Text(text = "Permissão de localicação precisa aceita")
+                            }
                         }
                         perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de localicação precisa é necessária")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de localicação precisa é necessária")
+                            }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de localicação precisa foi rejeitada permanentemente")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de localicação precisa foi rejeitada permanentemente")
+                            }
                         }
                     }
                 }
                 Manifest.permission.ACCESS_COARSE_LOCATION -> {
                     when {
                         perm.status.isGranted -> {
-                            Text(text = "Permissão de localização aproximada aceita")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.check_circle_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Green600
+                                )
+                                Text(text = "Permissão de localização aproximada aceita")
+                            }
                         }
                         perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de localização aproximada é necessária")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de localização aproximada é necessária")
+                            }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de localização aproximada foi rejeitada permanentemente")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de localização aproximada foi rejeitada permanentemente")
+                            }
                         }
                     }
                 }
                 Manifest.permission.CHANGE_WIFI_STATE -> {
                     when {
                         perm.status.isGranted -> {
-                            Text(text = "Permissão de mudança de Wi-Fi aceita")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.check_circle_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Green600
+                                )
+                                Text(text = "Permissão de mudança de Wi-Fi aceita")
+                            }
                         }
                         perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de mudança de Wi-Fi é necessária")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de mudança de Wi-Fi é necessária")
+                            }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão de mudança de Wi-Fi foi rejeitada permanentemente")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão de mudança de Wi-Fi foi rejeitada permanentemente")
+                            }
                         }
                     }
                 }
                 Manifest.permission.ACCESS_WIFI_STATE -> {
                     when {
                         perm.status.isGranted -> {
-                            Text(text = "Permissão para acessar o estado do Wi-Fi aceita")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.check_circle_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Green600
+                                )
+                                Text(text = "Permissão para acessar o estado do Wi-Fi aceita")
+                            }
                         }
                         perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão para acessar o estado do Wi-Fi é necessária")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão para acessar o estado do Wi-Fi é necessária")
+                            }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
-                            Text(text = "Permissão para acessar o estado do Wi-Fi foi rejeitada permanentemente")
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.cancel_fill),
+                                    contentDescription = null,
+                                    modifier = iconModifier,
+                                    tint = Red600
+                                )
+                                Text(text = "Permissão para acessar o estado do Wi-Fi foi rejeitada permanentemente")
+                            }
                         }
                     }
                 }
@@ -121,7 +219,8 @@ fun ColumnScope.Buttons(
             .fillMaxWidth()
             .weight(1f)
             .padding(2.dp, 2.dp)
-            .alpha(if (permissionsState.allPermissionsGranted) 0.5f else 1f)
+            .alpha(if (permissionsState.allPermissionsGranted) 0.5f else 1f),
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (!permissionsState.allPermissionsGranted) Green600 else Red600)
     ) {
         Text(text = "Request Permissions")
     }
@@ -137,7 +236,8 @@ fun ColumnScope.Buttons(
             .fillMaxWidth()
             .weight(1f)
             .padding(2.dp, 2.dp)
-            .alpha(if (!permissionsState.allPermissionsGranted) 0.5f else 1f)
+            .alpha(if (!permissionsState.allPermissionsGranted) 0.5f else 1f),
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (permissionsState.allPermissionsGranted) Green600 else Red600)
     ) {
         Text(text = "Continuar")
     }
