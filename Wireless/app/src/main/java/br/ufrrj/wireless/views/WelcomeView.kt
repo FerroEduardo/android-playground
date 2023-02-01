@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -15,7 +16,9 @@ import androidx.core.app.ActivityCompat
 import androidx.navigation.NavHostController
 import br.ufrrj.wireless.R
 import br.ufrrj.wireless.WifiListDestination
+import br.ufrrj.wireless.ui.theme.Background
 import br.ufrrj.wireless.ui.theme.Green600
+import br.ufrrj.wireless.ui.theme.Red
 import br.ufrrj.wireless.ui.theme.Red600
 import com.google.accompanist.permissions.*
 
@@ -25,7 +28,7 @@ fun WelcomeScreen(navController: NavHostController) {
     val permissionsState = rememberMultiplePermissionsState(permissions = requiredPerms.toList())
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colors.background,
+        color = Background,
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -59,7 +62,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Green600
                                 )
-                                Text(text = "Permissão de localicação precisa aceita")
+                                Text(
+                                    text = "Permissão de localicação precisa aceita",
+                                    color = Color.White
+                                )
                             }
                         }
                         perm.status.shouldShowRationale -> {
@@ -70,7 +76,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de localicação precisa é necessária")
+                                Text(
+                                    text = "Permissão de localicação precisa é necessária",
+                                    color = Color.White
+                                )
                             }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
@@ -81,7 +90,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de localicação precisa foi rejeitada permanentemente")
+                                Text(
+                                    text = "Permissão de localicação precisa foi rejeitada permanentemente",
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -96,7 +108,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Green600
                                 )
-                                Text(text = "Permissão de localização aproximada aceita")
+                                Text(
+                                    text = "Permissão de localização aproximada aceita",
+                                    color = Color.White
+                                )
                             }
                         }
                         perm.status.shouldShowRationale -> {
@@ -107,7 +122,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de localização aproximada é necessária")
+                                Text(
+                                    text = "Permissão de localização aproximada é necessária",
+                                    color = Color.White
+                                )
                             }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
@@ -118,7 +136,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de localização aproximada foi rejeitada permanentemente")
+                                Text(
+                                    text = "Permissão de localização aproximada foi rejeitada permanentemente",
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -133,7 +154,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Green600
                                 )
-                                Text(text = "Permissão de mudança de Wi-Fi aceita")
+                                Text(
+                                    text = "Permissão de mudança de Wi-Fi aceita",
+                                    color = Color.White
+                                )
                             }
                         }
                         perm.status.shouldShowRationale -> {
@@ -144,7 +168,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de mudança de Wi-Fi é necessária")
+                                Text(
+                                    text = "Permissão de mudança de Wi-Fi é necessária",
+                                    color = Color.White
+                                )
                             }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
@@ -155,7 +182,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão de mudança de Wi-Fi foi rejeitada permanentemente")
+                                Text(
+                                    text = "Permissão de mudança de Wi-Fi foi rejeitada permanentemente",
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -170,7 +200,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Green600
                                 )
-                                Text(text = "Permissão para acessar o estado do Wi-Fi aceita")
+                                Text(
+                                    text = "Permissão para acessar o estado do Wi-Fi aceita",
+                                    color = Color.White
+                                )
                             }
                         }
                         perm.status.shouldShowRationale -> {
@@ -181,7 +214,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão para acessar o estado do Wi-Fi é necessária")
+                                Text(
+                                    text = "Permissão para acessar o estado do Wi-Fi é necessária",
+                                    color = Color.White
+                                )
                             }
                         }
                         !perm.status.isGranted && !perm.status.shouldShowRationale -> {
@@ -192,7 +228,10 @@ fun ColumnScope.PermissionsStateList(permissionsState: MultiplePermissionsState)
                                     modifier = iconModifier,
                                     tint = Red600
                                 )
-                                Text(text = "Permissão para acessar o estado do Wi-Fi foi rejeitada permanentemente")
+                                Text(
+                                    text = "Permissão para acessar o estado do Wi-Fi foi rejeitada permanentemente",
+                                    color = Color.White
+                                )
                             }
                         }
                     }
@@ -219,10 +258,10 @@ fun ColumnScope.Buttons(
             .fillMaxWidth()
             .weight(1f)
             .padding(2.dp, 2.dp)
-            .alpha(if (permissionsState.allPermissionsGranted) 0.5f else 1f),
-        colors = ButtonDefaults.buttonColors(backgroundColor = if (!permissionsState.allPermissionsGranted) Green600 else Red600)
+            .alpha(if (permissionsState.allPermissionsGranted) 0.6f else 1f),
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (!permissionsState.allPermissionsGranted) Green600 else Red)
     ) {
-        Text(text = "Request Permissions")
+        Text(text = "Request Permissions", color = Color(0xfffafafa))
     }
     Button(
         onClick = {
@@ -236,9 +275,9 @@ fun ColumnScope.Buttons(
             .fillMaxWidth()
             .weight(1f)
             .padding(2.dp, 2.dp)
-            .alpha(if (!permissionsState.allPermissionsGranted) 0.5f else 1f),
-        colors = ButtonDefaults.buttonColors(backgroundColor = if (permissionsState.allPermissionsGranted) Green600 else Red600)
+            .alpha(if (!permissionsState.allPermissionsGranted) 0.6f else 1f),
+        colors = ButtonDefaults.buttonColors(backgroundColor = if (permissionsState.allPermissionsGranted) Green600 else Red)
     ) {
-        Text(text = "Continuar")
+        Text(text = "Continue", color = Color(0xfffafafa))
     }
 }
