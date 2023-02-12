@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.net.wifi.ScanResult
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.*
@@ -65,7 +66,10 @@ val requiredPerms = arrayOf(
 
 @SuppressLint("UnrememberedMutableState")
 @Composable
-fun WifiListScreen(navController: NavHostController) {
+fun WifiListScreen(
+    navController: NavHostController,
+    isLocationEnabled: MutableState<Boolean>
+) {
     val wifiManager = WifiManager(LocalContext.current)
 
     Surface(
@@ -79,14 +83,15 @@ fun WifiListScreen(navController: NavHostController) {
                 .fillMaxSize()
         ) {
             WifiList(WifiManager.scanResultList)
-            Buttons(wifiManager)
+            Buttons(wifiManager, isLocationEnabled)
         }
     }
 }
 
 @Composable
 fun Buttons(
-    wifiManager: WifiManager
+    wifiManager: WifiManager,
+    isLocationEnabled: MutableState<Boolean>
 ) {
     val activity = LocalContext.current as Activity
     val isScanning by WifiManager.isScanning
@@ -95,14 +100,18 @@ fun Buttons(
     Row(modifier = Modifier.padding(10.dp, 0.dp)) {
         Button(
             onClick = {
-                ActivityCompat.requestPermissions(activity, requiredPerms, 42)
-                if (!isScanning) wifiManager.startScan()
+                if (!isLocationEnabled.value) {
+                    Toast.makeText(context, "Ative o GPS", Toast.LENGTH_SHORT).show()
+                } else {
+                    ActivityCompat.requestPermissions(activity, requiredPerms, 42)
+                    if (!isScanning) wifiManager.startScan()
+                }
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .padding(2.dp, 0.dp)
-                .alpha(if (isScanning) 0.5f else 1f),
+                .alpha(if (isScanning && isLocationEnabled.value) 0.5f else 1f),
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xffFCAC0D))
         ) {
             Text(text = "Scan", color = Color(0xfffafafa), fontWeight = FontWeight.Bold)
