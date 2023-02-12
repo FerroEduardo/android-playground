@@ -1,5 +1,7 @@
 package br.ufrrj.wireless
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -20,6 +22,7 @@ fun NavigationHost(
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
+    val activity = LocalContext.current as Activity
     val locationUtil = LocationUtil(context)
     val isLocationEnabled = remember { mutableStateOf(locationUtil.isLocationEnabled()) }
     val checkLocationLoop = remember { mutableStateOf(true) }
@@ -29,6 +32,9 @@ fun NavigationHost(
             delay(1000)
         }
     }
+
+    activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+
     NavHost(
         navController = navController,
         startDestination = WelcomeDestination.route,
